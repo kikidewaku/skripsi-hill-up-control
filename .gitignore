@@ -1,0 +1,25 @@
+# STM32CubeIDE / Eclipse Build Artifacts
+Debug/
+Release/
+
+# Compiled Object files, executables, listings
+*.o
+*.d
+*.su
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+
+# Temporary and backup files
+*.tmp
+*.bak
+*~
+
+# Eclipse configuration files that shouldn't be shared
+.settings/language.settings.xml
+
+# OS generated files
+.DS_Store
+Thumbs.db
