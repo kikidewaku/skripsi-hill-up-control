@@ -1,6 +1,6 @@
-# Firmware Sistem Hill-Up Control (Hill-Start Assist) - STM32F446RE
+# Firmware Sistem Hill-Up Control (Hill-Start Assist) - STM32F446RET6
 
-Repositori ini berisi firmware embedded untuk sistem kendali **Hill-Up Control (Hill-Start Assist)** berbasis mikrokontroler **STM32F446RE** (ARM Cortex-M4) pada kendaraan uji sasis/powertrain 10 kg.
+Repositori ini berisi firmware embedded untuk sistem kendali **Hill-Up Control (Hill-Start Assist)** berbasis mikrokontroler **STM32F446RET6** (ARM Cortex-M4) pada kendaraan uji sasis/powertrain 10 kg.
 
 ---
 
