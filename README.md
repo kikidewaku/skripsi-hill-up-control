@@ -61,3 +61,8 @@ SKRIPSI/
 5. Klik **Finish**.
 6. Klik tombol **Build (Palu)** atau tekan `Ctrl + B` untuk mengompilasi.
 7. Hubungkan ST-Link ke board STM32F446RE Nucleo/Discovery dan klik **Run / Debug** (`F11`).
+
+
+
+
+Ini mau test sensor RPM di blackpill, nanti kubuat "SensorIR_RPM.h", boleh taro di .SKRIPSI/Core/Inc/SensorIR_RPM.h
