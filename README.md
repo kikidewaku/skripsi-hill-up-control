@@ -20,6 +20,9 @@ Repositori ini berisi firmware embedded untuk sistem kendali **Hill-Up Control (
    - Transmisi data serial 115200 bps ke PC / Python Telemetry Dashboard.
    - Format integer breakdown (`%d.%02d`) untuk kompatibilitas GCC Newlib-nano.
 
+4. **Pengukuran RPM dengan Sensor IR:**
+   - Terdapat 4 sensor IR untuk pembacaan RPM roda depan kanan dan kiri untuk mengukur slip
+   - Penggunaan EXTI untuk pembacaan RPM secara realtime
 ---
 
 ## 🛠️ Spesifikasi Perangkat Lunak & Kebutuhan
