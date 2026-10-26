@@ -1,6 +1,6 @@
-# Firmware Sistem Hill-Up Control (Hill-Start Assist) - STM32F446RE
+# Firmware Sistem Hill-Up Control (Hill-Start Assist) - STM32F446RET6
 
-Repositori ini berisi firmware embedded untuk sistem kendali **Hill-Up Control (Hill-Start Assist)** berbasis mikrokontroler **STM32F446RE** (ARM Cortex-M4) pada kendaraan uji sasis/powertrain 10 kg.
+Repositori ini berisi firmware embedded untuk sistem kendali **Hill-Up Control (Hill-Start Assist)** berbasis mikrokontroler **STM32F446RET6** (ARM Cortex-M4) pada kendaraan uji sasis/powertrain 10 kg.
 
 ---
 
@@ -20,6 +20,9 @@ Repositori ini berisi firmware embedded untuk sistem kendali **Hill-Up Control (
    - Transmisi data serial 115200 bps ke PC / Python Telemetry Dashboard.
    - Format integer breakdown (`%d.%02d`) untuk kompatibilitas GCC Newlib-nano.
 
+4. **Pengukuran RPM dengan Sensor IR:**
+   - Terdapat 4 sensor IR untuk pembacaan RPM roda depan kanan dan kiri untuk mengukur slip
+   - Penggunaan EXTI untuk pembacaan RPM secara realtime
 ---
 
 ## 🛠️ Spesifikasi Perangkat Lunak & Kebutuhan
