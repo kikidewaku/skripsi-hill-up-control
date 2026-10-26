@@ -300,47 +300,24 @@ int main(void) {
     monitor.loop_counter++;
     monitor.mpu6050_connected = mpu6050_status;
 
-    // Integer breakdown untuk sprintf (mencegah bug nano-printf float disabled
-    // di GCC STM32)
-    int ax_i = (int)Ax, ax_f = (int)(fabsf(Ax - (float)ax_i) * 100.0f);
-    int ay_i = (int)Ay, ay_f = (int)(fabsf(Ay - (float)ay_i) * 100.0f);
-    int az_i = (int)Az, az_f = (int)(fabsf(Az - (float)az_i) * 100.0f);
-
-    int gx_i = (int)Gx, gx_f = (int)(fabsf(Gx - (float)gx_i) * 10.0f);
-    int gy_i = (int)Gy, gy_f = (int)(fabsf(Gy - (float)gy_i) * 10.0f);
-    int gz_i = (int)Gz, gz_f = (int)(fabsf(Gz - (float)gz_i) * 10.0f);
-
-    int raw_i = (int)pitch_accel,
-        raw_f = (int)(fabsf(pitch_accel - (float)raw_i) * 100.0f);
-    int comp_i = (int)pitch_comp,
-        comp_f = (int)(fabsf(pitch_comp - (float)comp_i) * 100.0f);
-    int kal_i = (int)Kalman_pitch,
-        kal_f = (int)(fabsf(Kalman_pitch - (float)kal_i) * 100.0f);
-    int bias_i = (int)Kalman_bias,
-        bias_f = (int)(fabsf(Kalman_bias - (float)bias_i) * 1000.0f);
-
-    const char *ax_sgn = (Ax < 0.0f && ax_i == 0) ? "-" : "";
-    const char *ay_sgn = (Ay < 0.0f && ay_i == 0) ? "-" : "";
-    const char *az_sgn = (Az < 0.0f && az_i == 0) ? "-" : "";
-
-    const char *gx_sgn = (Gx < 0.0f && gx_i == 0) ? "-" : "";
-    const char *gy_sgn = (Gy < 0.0f && gy_i == 0) ? "-" : "";
-    const char *gz_sgn = (Gz < 0.0f && gz_i == 0) ? "-" : "";
-
-    const char *raw_sgn = (pitch_accel < 0.0f && raw_i == 0) ? "-" : "";
-    const char *comp_sgn = (pitch_comp < 0.0f && comp_i == 0) ? "-" : "";
+    // Integer breakdown untuk sprintf Kalman Pitch (mencegah bug nano-printf float)
+    int kal_i = (int)Kalman_pitch;
+    int kal_f = (int)(fabsf(Kalman_pitch - (float)kal_i) * 100.0f);
     const char *kal_sgn = (Kalman_pitch < 0.0f && kal_i == 0) ? "-" : "";
-    const char *bias_sgn = (Kalman_bias < 0.0f && bias_i == 0) ? "-" : "";
 
-    // Format data serial UART (Termasuk Raw, Comp, Kalman Pitch & Bias)
+    // Hitung sisa mailbox transmisi CAN yang kosong
+    uint32_t tx_free = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
+    int cmd_i = (int)motor_cmd_current;
+    int cmd_f = (int)(fabsf(motor_cmd_current - (float)cmd_i) * 10.0f);
+
+    // Format serial gabungan Pitch + Diagnostik CAN Bus
     sprintf(uart_buf,
-            "Ax:%s%d.%02dg Ay:%s%d.%02dg Az:%s%d.%02dg | Gx:%s%d.%01d "
-            "Gy:%s%d.%01d Gz:%s%d.%01d | RawP:%s%d.%02d CompP:%s%d.%02d "
-            "KalP:%s%d.%02d Bias:%s%d.%03d | Pitch:%s%d.%02d deg\r\n",
-            ax_sgn, ax_i, ax_f, ay_sgn, ay_i, ay_f, az_sgn, az_i, az_f, gx_sgn,
-            gx_i, gx_f, gy_sgn, gy_i, gy_f, gz_sgn, gz_i, gz_f, raw_sgn, raw_i,
-            raw_f, comp_sgn, comp_i, comp_f, kal_sgn, kal_i, kal_f, bias_sgn,
-            bias_i, bias_f, kal_sgn, kal_i, kal_f);
+            "Pitch:%s%d.%02d | BTN:%d Cmd:%d.%01dA | CAN_RX:%lu (ID_VESC:%lu) | TX_Free:%lu TEC:%d REC:%d BOFF:%d LEC:%d | RPM:%ld\r\n",
+            kal_sgn, kal_i, kal_f,
+            monitor.btn_pc13_pressed, cmd_i, cmd_f,
+            monitor.can_rx_packets, monitor.can_last_rx_id,
+            tx_free, monitor.can_tec, monitor.can_rec, monitor.can_boff, monitor.can_lec,
+            (long)monitor.vesc_rpm);
 
     // Kirim string telemetri via USART1 UART (115200 baud)
     HAL_UART_Transmit(&huart1, (uint8_t *)uart_buf, strlen(uart_buf), 100);
@@ -403,15 +380,16 @@ static void MX_CAN1_Init(void) {
 
   /* USER CODE BEGIN CAN1_Init 0 */
   __HAL_RCC_CAN1_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE(); // 1. Ubah GPIOA menjadi GPIOB
 
   GPIO_InitTypeDef GPIO_CanStruct = {0};
-  GPIO_CanStruct.Pin = GPIO_PIN_11 | GPIO_PIN_12;
+  GPIO_CanStruct.Pin =
+      GPIO_PIN_8 | GPIO_PIN_9; // 2. Ubah PIN_11 & 12 menjadi PIN_8 & 9
   GPIO_CanStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_CanStruct.Pull = GPIO_NOPULL;
+  GPIO_CanStruct.Pull = GPIO_PULLUP; // 3. Ubah NOPULL menjadi PULLUP
   GPIO_CanStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_CanStruct.Alternate = GPIO_AF9_CAN1;
-  HAL_GPIO_Init(GPIOA, &GPIO_CanStruct);
+  GPIO_CanStruct.Alternate = GPIO_AF9_CAN1; // Tetap AF9
+  HAL_GPIO_Init(GPIOB, &GPIO_CanStruct);    // 4. Ubah GPIOA menjadi GPIOB
   /* USER CODE END CAN1_Init 0 */
 
   /* USER CODE BEGIN CAN1_Init 1 */
