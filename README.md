@@ -7,13 +7,12 @@ Repositori ini berisi firmware embedded untuk sistem kendali **Hill-Up Control (
 ## 📌 Fitur Utama Firmware
 
 1. **Estimasi Sudut Kemiringan (Pitch Estimation):**
-   - Akuisisi sensor IMU **MPU6050** via antarmuka I2C1 (Fast Mode 400 kHz).
-   - Filter Komplementer (bobot α = 0.98).
-   - 2-State Kalman Filter (estimasi sudut θ dan tracking gyro bias drift).
+   - Akuisisi sensor IMU **BNO055** via antarmuka I2C1: PB6 & PB7 (Fast Mode 400 kHz).
+   - Melakukan peningkatan jika diperlukan
    - Sampling rate deterministik 50 Hz (periode 20 ms).
 
 2. **Komunikasi CAN Bus Powertrain (VESC CAN Protocol):**
-   - Transmisi dan penerimaan data telemetri aktuator BLDC/VESC via CAN1.
+   - Transmisi dan penerimaan data telemetri aktuator BLDC/VESC via CAN1: PB8 & PB9.
    - Perintah kendali torsi/arus (current control) atau duty cycle untuk mencegah backward roll pada tanjakan.
 
 3. **Output Telemetri Serial UART:**
